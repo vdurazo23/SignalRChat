@@ -14,7 +14,14 @@ namespace SignalRChat
 
         protected void Application_Start(object sender, EventArgs e)
         {
-            RegisterSQLNotifications();
+            try
+            {
+                //RegisterSQLNotifications();
+            }
+            catch (Exception ex)
+            {
+            }
+            
         }
 
         protected void Session_Start(object sender, EventArgs e)

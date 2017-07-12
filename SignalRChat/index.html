@@ -57,10 +57,14 @@
         $(function () {
 
             //ASI CORRE LOCAL Y TRUENA EN SERVER
-            var connection = $.hubConnection();
+            //var connection = $.hubConnection();
 
             //ASI NO CORRE LOCAL PERO JALA EN SERVER
             //var connection = $.hubConnection('/SignalRChat/signalr', { useDefaultPath: false });
+
+
+            //ASI EN EL GEAR HOST A VER SI JALA
+            var connection = $.hubConnection('/signalr', { useDefaultPath: false });
 
 
             //ASI NO JALA NADA ERA SOLO EJEMPLO.
