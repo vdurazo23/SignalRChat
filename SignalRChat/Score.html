@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta charset="utf-8" />
+</head>
+<body>
+	<div>
+		Local : <input type="text" id="TxtLocal" />
+		<br />
+		Visitante: <input type="text" id="TxtVisitante" />
+
+		<ul id="discussion"></ul>
+
+	</div>
+	<script src="scripts/jquery-1.6.4.js"></script>
+	<script src="scripts/jquery.signalR-2.2.2.js"></script>
+
+	<script type="text/javascript">
+		$(function () {
+
+		  
+			//ASI CORRE LOCAL Y TRUENA EN SERVER
+			//var connection = $.hubConnection();
+
+			//ASI NO CORRE LOCAL PERO JALA EN SERVER
+			var connection = $.hubConnection('/SignalRChat/signalr', { useDefaultPath: false });
+
+
+			var chat = connection.createHubProxy('chatHub');
+
+
+
+
+			chat.on('BroadcastScore', function (local, visitante) {
+				$('#TxtLocal').val(local);
+				$('#TxtVisitante').val(visitante);
+
+				$('#discussion').append('<li><strong>' + local
+
+					+ '</strong>:  ' + visitante + '</li>');
+
+			});
+
+			connection.start(function ()
+			{
+				alert('SignalR hub started');
+			});
+
+		});
+	</script>
+
+</body>
+</html>

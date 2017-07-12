@@ -1,0 +1,179 @@
+﻿<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>SignalR Simple Chat 4.7</title>
+
+    <style type="text/css">
+        .container {
+            background-color: #99CCFF;
+            border: thick solid #808080;
+            padding: 20px;
+            margin: 20px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+        <p>Fecha Server:</p>
+        <br/>
+
+        <input type="text" id="message" />
+
+        <input type="button" id="sendmessage" value="Senddddd" />
+
+        <input type="button" id="sendmessagetoPancho" value="SendPanchouuu" />      
+        
+        <input type="text" id="displayname" />
+        <br />
+
+        <input type="text" id="txtequipolocal" />
+
+        <input type="text" id="txtequipovisitante" />
+
+        <input type="button" id="btnupdatescore" value="UpdateScore" />
+
+        <ul id="discussion"></ul>
+
+        
+
+    </div>
+
+    <script src="scripts/jquery-1.6.4.js"></script>
+
+    <script src="scripts/jquery.signalR-2.2.2.js"></script>
+
+
+
+    <!--Add script to update the page and send messages.-->
+
+    <script type="text/javascript">
+
+        $(function () {
+
+            //ASI CORRE LOCAL Y TRUENA EN SERVER
+            var connection = $.hubConnection();
+
+            //ASI NO CORRE LOCAL PERO JALA EN SERVER
+            //var connection = $.hubConnection('/SignalRChat/signalr', { useDefaultPath: false });
+
+
+            //ASI NO JALA NADA ERA SOLO EJEMPLO.
+            //var connection = $.hubConnection('http://10.251.10.29:8080/SignalRChat/signalr', { useDefaultPath: false });
+
+
+            var chat = connection.createHubProxy('chatHub');
+
+            // Declare a proxy to reference the hub.
+
+            //var chat = $.connection.chatHub;
+
+            // Create a function that the hub can call to broadcast messages.
+
+            chat.on('broadcastMessage', function (name, message) {
+
+                // Html encode display name and message.
+
+                var encodedName = $('<div />').text(name).html();
+
+                var encodedMsg = $('<div />').text(message).html();
+
+                // Add the message to the page.
+
+                $('#discussion').append('<li><strong>' + encodedName
+
+                    + '</strong>:  ' + encodedMsg + '</li>');
+
+            });
+
+            chat.on('BroadcastDateTime', function (fecha) {
+                $('p').text(fecha);
+            });
+
+
+            chat.on('addNewMessageToPage', function (name, message,from) {
+
+                if (name == $('#displayname').val() || from==$('#displayname').val())
+                {
+                
+                // Html encode display name and message.
+
+                    
+                var encodedFrom = $('<div />').text(from).html();
+
+                var encodedName = $('<div />').text(name).html();
+
+                var encodedMsg = $('<div />').text(message).html();
+
+                // Add the message to the page.
+
+                $('#discussion').append('<li><strong> from @ ' + encodedFrom
+
+                    + '</strong>:  ' + encodedMsg + ' To @'+ encodedName + '</li>');
+                };
+
+            });
+
+            // Get the user name and store it to prepend to messages.
+
+            $('#displayname').val(prompt('Enter your name:', ''));
+
+            // Set initial focus to message input box.
+
+            $('#message').focus();
+
+
+            //connection.hub.url = "/SignalRChat/signalr";
+
+            connection.start(function ()
+
+            {
+
+                $('#sendmessage').click(function () {
+
+                    // Call the Send method on the hub.
+
+
+
+                    chat.invoke('Send',$('#displayname').val(), $('#message').val());
+
+                    // Clear text box and reset focus for next comment.
+
+                    $('#message').val('').focus();
+
+                });
+
+
+                $('#sendmessagetoPancho').click(function () {
+
+                    // Call the Send method on the hub.
+
+
+
+                    chat.invoke('MensajeaUsuario', "Pancho", $('#message').val(), $('#displayname').val());
+
+                    // Clear text box and reset focus for next comment.
+
+                    $('#message').val('').focus();
+
+                });
+
+                $('#btnupdatescore').click(function () {
+                    chat.invoke('UpdateScore', $('#txtequipolocal').val(), $('#txtequipovisitante').val());
+                });
+
+
+            });
+
+        });
+
+    </script>
+
+</body>
+
+</html>
